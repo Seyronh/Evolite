@@ -1,11 +1,13 @@
-import type { selectionMethod, WithFitness } from "./types.ts";
+import type { WithFitness } from "./types.ts";
 
 /**
  * This selection method selects the two fittest individuals from the population.
  *
  * Warning: This function expects that the population is already sorted by fitness
  */
-const fittestSelection: selectionMethod<WithFitness> = async (population) => {
+const fittestSelection = async <Entity extends WithFitness>(
+  population: Entity[]
+): Promise<[Entity, Entity]> => {
   if (population.length < 2) {
     throw new Error(
       "Population must have at least 2 individuals for fittest selection."
@@ -16,7 +18,9 @@ const fittestSelection: selectionMethod<WithFitness> = async (population) => {
 /**
  * This selection method selects two individuals at random from the population.
  */
-const randomSelection: selectionMethod<WithFitness> = async (population) => {
+const randomSelection = async <Entity extends WithFitness>(
+  population: Entity[]
+): Promise<[Entity, Entity]> => {
   if (population.length < 2) {
     throw new Error(
       "Population must have at least 2 individuals for random selection."
@@ -33,15 +37,15 @@ const randomSelection: selectionMethod<WithFitness> = async (population) => {
  *
  * This process is repeated until two parents are selected.
  */
-const tournamentSelection: selectionMethod<WithFitness> = async (
-  population
-) => {
+const tournamentSelection = async <Entity extends WithFitness>(
+  population: Entity[]
+): Promise<[Entity, Entity]> => {
   if (population.length < 2) {
     throw new Error(
       "Population must have at least 2 individuals for tournament selection."
     );
   }
-  const winners = [];
+  const winners: Entity[] = [];
   for (let i = 0; i < 2; i++) {
     const randomIndex1 = Math.floor(Math.random() * population.length);
     const randomIndex2 = Math.floor(Math.random() * population.length);
@@ -64,10 +68,9 @@ const tournamentSelection: selectionMethod<WithFitness> = async (
  *
  * This process is repeated until two parents are selected.
  */
-
-const linearRankingSelection: selectionMethod<WithFitness> = async (
-  population
-) => {
+const linearRankingSelection = async <Entity extends WithFitness>(
+  population: Entity[]
+): Promise<[Entity, Entity]> => {
   if (population.length < 2) {
     throw new Error(
       "Population must have at least 2 individuals for linear ranking selection."
@@ -88,7 +91,7 @@ const linearRankingSelection: selectionMethod<WithFitness> = async (
   const totalRankSum = ranks.reduce((sum, rank) => sum + rank, 0);
 
   // Select two individuals based on their ranks
-  const selectedIndividuals: WithFitness[] = [];
+  const selectedIndividuals: Entity[] = [];
   for (let i = 0; i < 2; i++) {
     const randomValue = Math.random() * totalRankSum;
     let cumulativeRankSum = 0;
@@ -111,9 +114,9 @@ const linearRankingSelection: selectionMethod<WithFitness> = async (
  *
  * This process is repeated until two parents are selected.
  */
-const rouletteWheelSelection: selectionMethod<WithFitness> = async (
-  population
-) => {
+const rouletteWheelSelection = async <Entity extends WithFitness>(
+  population: Entity[]
+): Promise<[Entity, Entity]> => {
   if (population.length < 2) {
     throw new Error(
       "Population must have at least 2 individuals for roulette wheel selection."
@@ -127,7 +130,7 @@ const rouletteWheelSelection: selectionMethod<WithFitness> = async (
   }, 0);
 
   // Select two individuals based on their fitness proportion
-  const selectedIndividuals: WithFitness[] = [];
+  const selectedIndividuals: Entity[] = [];
   for (let i = 0; i < 2; i++) {
     const randomValue = Math.random() * totalFitness;
     let cumulativeFitnessSum = 0;

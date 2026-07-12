@@ -1,5 +1,6 @@
 import { GeneticAlgorithm } from "./geneticAlgorithm.ts";
 import { Optimize } from "./types.ts";
+import type { geneticAlgorithmOptions } from "./types.ts";
 import {
   fittestSelection,
   randomSelection,
@@ -16,3 +17,4 @@ export {
   rouletteWheelSelection,
   Optimize,
 };
+export type { geneticAlgorithmOptions };
