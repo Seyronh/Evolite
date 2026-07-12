@@ -29,6 +29,7 @@
     "Optimization"
   ],
   "scripts": {
+    "test": "bun test --concurrent --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix && prettier --write .",
     "prepare": "lint-staged"

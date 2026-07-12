@@ -19,13 +19,10 @@ class GeneticAlgorithm<Entity extends WithFitness> {
   private fitnessObjective: number;
   private optimization: Optimize;
 
-  private fitnessFunction: fitnessFunction<Entity> = () => Promise.resolve(0);
-  private selectionMethod: selectionMethod<Entity> = () =>
-    Promise.resolve([{} as Entity, {} as Entity]);
-  private mutationMethod: mutationMethod<Entity> = (individual) =>
-    Promise.resolve(individual);
-  private crossoverMethod: crossoverMethod<Entity> = (parent1, parent2) =>
-    Promise.resolve(parent1 ?? parent2);
+  private fitnessFunction?: fitnessFunction<Entity>;
+  private selectionMethod?: selectionMethod<Entity>;
+  private mutationMethod?: mutationMethod<Entity>;
+  private crossoverMethod?: crossoverMethod<Entity>;
 
   constructor({
     initialPopulation,
@@ -67,11 +64,23 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     this.crossoverMethod = crossoverMethod;
   }
   private async step(): Promise<boolean> {
+    if (!this.fitnessFunction) {
+      throw new Error("Fitness function has not been set.");
+    }
+    if (!this.crossoverMethod) {
+      throw new Error("Crossover method has not been set.");
+    }
+    if (!this.selectionMethod) {
+      throw new Error("Selection method has not been set.");
+    }
+    if (!this.mutationMethod) {
+      throw new Error("Mutation method has not been set.");
+    }
     /*
     1. Evaluate fitness of the population
     */
     const fitnessPromises = this.population.map((individual) =>
-      this.fitnessFunction(individual)
+      this.fitnessFunction!(individual)
     );
     const fitnessValues = await Promise.all(fitnessPromises);
     this.population.forEach((individual, index) => {
@@ -115,6 +124,11 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     this.population = newPopulation;
     return false;
   }
+  /**
+   * Evolves the population for a given number of generations.
+   * @param generations The number of generations to evolve the population.
+   * @returns The fittest individual in the final population.
+   */
   async evolve(generations: number): Promise<Entity> {
     for (let i = 0; i < generations; i++) {
       const fitnessObjectiveReached = await this.step();
