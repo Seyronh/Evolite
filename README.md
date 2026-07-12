@@ -1,5 +1,9 @@
 # Evolite
 
+![NPM Version](https://img.shields.io/npm/v/evolite)
+![NPM Unpacked Size](https://img.shields.io/npm/unpacked-size/evolite)
+![NPM License](https://img.shields.io/npm/l/evolite)
+
 Evolite is a lightweight genetic algorithm library for TypeScript and JavaScript.
 It gives you a small async API for evolving any data shape as long as you can
 provide fitness, selection, crossover, and mutation functions.
