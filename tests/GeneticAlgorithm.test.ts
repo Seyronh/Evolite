@@ -182,4 +182,137 @@ describe("Genetic Algorithm", () => {
     expect(fittest.cost).toBe(10);
     expect(ga.generation).toBe(3);
   });
+  test("should call the callback function after each generation", async () => {
+    // Arrange
+    const initialPopulation = [
+      { fitness: 10 },
+      { fitness: 20 },
+      { fitness: 30 },
+      { fitness: 40 },
+    ];
+    let callbackCount = 0;
+    const ga = new GeneticAlgorithm({
+      initialPopulation,
+      maxPopulationSize: 4,
+      mutationRate: 0.1,
+      fittestAlwaysSurvives: true,
+      optimization: Optimize.Maximize,
+      logging: false,
+    });
+    ga.setFitnessFunction(async (individual) => individual.fitness ?? 0);
+    ga.setSelectionMethod(async (population) => [
+      population[0]!,
+      population[1]!,
+    ]);
+    ga.setMutationMethod(async (individual) => ({
+      fitness: (individual.fitness ?? 0) + 1,
+    }));
+    ga.setCrossoverMethod(async (parent1, parent2) => ({
+      fitness: ((parent1?.fitness ?? 0) + (parent2?.fitness ?? 0)) / 2,
+    }));
+    // Act
+    await ga.evolve(5, (generation, population, fittest) => {
+      callbackCount++;
+      expect(generation).toBeGreaterThan(0);
+      expect(population.length).toBeGreaterThan(0);
+      expect(fittest).toBeDefined();
+      expect(fittest.fitness).toBeDefined();
+    });
+    // Assert
+    expect(callbackCount).toBe(5);
+  });
+  test("should pass the correct generation number to the callback", async () => {
+    // Arrange
+    const initialPopulation = [
+      { fitness: 10 },
+      { fitness: 20 },
+      { fitness: 30 },
+      { fitness: 40 },
+    ];
+    const generationNumbers: number[] = [];
+    const ga = new GeneticAlgorithm({
+      initialPopulation,
+      maxPopulationSize: 4,
+      mutationRate: 0,
+      fittestAlwaysSurvives: true,
+      optimization: Optimize.Maximize,
+      logging: false,
+    });
+    ga.setFitnessFunction(async (individual) => individual.fitness ?? 0);
+    ga.setSelectionMethod(async (population) => [
+      population[0]!,
+      population[1]!,
+    ]);
+    ga.setMutationMethod(async (individual) => individual);
+    ga.setCrossoverMethod(async (parent1) => parent1);
+    // Act
+    await ga.evolve(3, (generation) => {
+      generationNumbers.push(generation);
+    });
+    // Assert
+    expect(generationNumbers).toEqual([1, 2, 3]);
+  });
+  test("should pass the fittest individual to the callback", async () => {
+    // Arrange
+    const initialPopulation = [
+      { fitness: 10 },
+      { fitness: 20 },
+      { fitness: 30 },
+      { fitness: 40 },
+    ];
+    const fittestValues: number[] = [];
+    const ga = new GeneticAlgorithm({
+      initialPopulation,
+      maxPopulationSize: 4,
+      mutationRate: 0,
+      fittestAlwaysSurvives: true,
+      optimization: Optimize.Maximize,
+      logging: false,
+    });
+    ga.setFitnessFunction(async (individual) => individual.fitness ?? 0);
+    ga.setSelectionMethod(async (population) => [
+      population[0]!,
+      population[1]!,
+    ]);
+    ga.setMutationMethod(async (individual) => individual);
+    ga.setCrossoverMethod(async (parent1) => parent1);
+    // Act
+    await ga.evolve(2, (generation, population, fittest) => {
+      fittestValues.push(fittest.fitness ?? 0);
+    });
+    // Assert
+    expect(fittestValues[0]).toBe(40);
+    expect(fittestValues[1]).toBe(40);
+  });
+  test("should not call the callback if none is provided", async () => {
+    // Arrange
+    const initialPopulation = [
+      { fitness: 10 },
+      { fitness: 20 },
+      { fitness: 30 },
+      { fitness: 40 },
+    ];
+    const ga = new GeneticAlgorithm({
+      initialPopulation,
+      maxPopulationSize: 4,
+      mutationRate: 0.1,
+      fittestAlwaysSurvives: true,
+      optimization: Optimize.Maximize,
+      logging: false,
+    });
+    ga.setFitnessFunction(async (individual) => individual.fitness ?? 0);
+    ga.setSelectionMethod(async (population) => [
+      population[0]!,
+      population[1]!,
+    ]);
+    ga.setMutationMethod(async (individual) => ({
+      fitness: (individual.fitness ?? 0) + 1,
+    }));
+    ga.setCrossoverMethod(async (parent1, parent2) => ({
+      fitness: ((parent1?.fitness ?? 0) + (parent2?.fitness ?? 0)) / 2,
+    }));
+    // Act & Assert (should not throw error)
+    const fittest = await ga.evolve(3);
+    expect(fittest.fitness).toBeGreaterThan(0);
+  });
 });

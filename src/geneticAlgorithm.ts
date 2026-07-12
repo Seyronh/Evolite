@@ -140,9 +140,19 @@ class GeneticAlgorithm<Entity extends WithFitness> {
    * @param generations The number of generations to evolve the population.
    * @returns The fittest individual in the final population.
    */
-  async evolve(generations: number): Promise<Entity> {
+  async evolve(
+    generations: number,
+    callback?: (
+      generation: number,
+      population: Entity[],
+      fittest: Entity
+    ) => void
+  ): Promise<Entity> {
     for (let i = 0; i < generations; i++) {
       const fitnessObjectiveReached = await this.step();
+      if (callback) {
+        callback(this.generation, this.population, this.population[0]!);
+      }
       if (fitnessObjectiveReached) {
         if (this.logging) {
           console.log(
