@@ -1,7 +1,33 @@
 {
   "name": "evolite",
-  "module": "index.ts",
-  "type": "module",
+  "description": "A lightweight and efficient genetic algorithm library for TypeScript and JavaScript.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "private": true,
+  "homepage": "https://github.com/Seyronh/Evolite",
+  "version": "0.0.0-semantic-release",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Seyronh/Evolite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Seyronh/Evolite/issues"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist",
+    "package.json",
+    "package-lock.json"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Seyronh"
+  },
+  "keywords": [
+    "Genetic Algorithm",
+    "Optimization"
+  ],
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix && prettier --write .",
@@ -16,6 +42,7 @@
     "eslint": "^10.7.0",
     "globals": "^17.7.0",
     "husky": "^9.1.7",
+    "jiti": "^2.7.0",
     "lint-staged": "^17.0.8",
     "prettier": "^3.9.5",
     "typescript-eslint": "^8.63.0"
