@@ -102,4 +102,84 @@ describe("Genetic Algorithm", () => {
     // Assert
     expect(fittest.fitness).toBeGreaterThanOrEqual(100);
   });
+  test("should keep the lowest-cost individual as the fittest one when optimizing for Minimize", async () => {
+    // Arrange
+    type Candidate = { cost: number; fitness?: number };
+    const initialPopulation: Candidate[] = [
+      { cost: 10 },
+      { cost: 20 },
+      { cost: 30 },
+      { cost: 40 },
+    ];
+    const ga = new GeneticAlgorithm({
+      initialPopulation,
+      maxPopulationSize: 4,
+      mutationRate: 0,
+      fittestAlwaysSurvives: true,
+      optimization: Optimize.Minimize,
+      logging: false,
+      loggingInterval: 1,
+      fitnessObjective: -1000,
+    });
+    ga.setFitnessFunction(async (individual) => {
+      return individual.cost;
+    });
+    ga.setSelectionMethod(async (population) => {
+      return [population[0]!, population[1]!];
+    });
+    ga.setMutationMethod(async (individual) => {
+      individual.cost += 1;
+      return individual;
+    });
+    ga.setCrossoverMethod(async (parent1) => {
+      return {
+        cost: parent1.cost,
+      };
+    });
+    // Act
+    const fittest = await ga.evolve(1);
+    // Assert
+    expect(fittest.cost).toBe(10);
+    expect(fittest.fitness).toBe(-10);
+  });
+  test("should not stop early when the minimize objective has not been reached", async () => {
+    // Arrange
+    type Candidate = { cost: number; fitness?: number };
+    const initialPopulation: Candidate[] = [
+      { cost: 10 },
+      { cost: 20 },
+      { cost: 30 },
+      { cost: 40 },
+    ];
+    const ga = new GeneticAlgorithm({
+      initialPopulation,
+      maxPopulationSize: 4,
+      mutationRate: 0,
+      fittestAlwaysSurvives: true,
+      optimization: Optimize.Minimize,
+      logging: false,
+      loggingInterval: 1,
+      fitnessObjective: -100,
+    });
+    ga.setFitnessFunction(async (individual) => {
+      return individual.cost;
+    });
+    ga.setSelectionMethod(async (population) => {
+      return [population[0]!, population[1]!];
+    });
+    ga.setMutationMethod(async (individual) => {
+      individual.cost += 1;
+      return individual;
+    });
+    ga.setCrossoverMethod(async (parent1) => {
+      return {
+        cost: parent1.cost,
+      };
+    });
+    // Act
+    const fittest = await ga.evolve(2);
+    // Assert
+    expect(fittest.cost).toBe(10);
+    expect(ga.generation).toBe(3);
+  });
 });

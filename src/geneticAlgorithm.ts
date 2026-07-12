@@ -84,16 +84,15 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     );
     const fitnessValues = await Promise.all(fitnessPromises);
     this.population.forEach((individual, index) => {
-      individual.fitness = fitnessValues[index];
+      individual.fitness =
+        this.optimization === Optimize.Maximize
+          ? fitnessValues[index]!
+          : -fitnessValues[index]!;
     });
     /*
     2. Sort the population based on fitness
     */
-    this.population.sort((a, b) =>
-      this.optimization === Optimize.Maximize
-        ? (b.fitness ?? 0) - (a.fitness ?? 0)
-        : (a.fitness ?? 0) - (b.fitness ?? 0)
-    );
+    this.population.sort((a, b) => b.fitness! - a.fitness!);
     /*
     3. Check if the fitness objective has been reached
     */
