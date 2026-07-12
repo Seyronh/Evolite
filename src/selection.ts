@@ -1,5 +1,10 @@
 import type { selectionMethod, WithFitness } from "./types.ts";
 
+/**
+ * This selection method selects the two fittest individuals from the population.
+ *
+ * Warning: This function expects that the population is already sorted by fitness
+ */
 const fittestSelection: selectionMethod<WithFitness> = async (population) => {
   if (population.length < 2) {
     throw new Error(
@@ -8,7 +13,9 @@ const fittestSelection: selectionMethod<WithFitness> = async (population) => {
   }
   return [population[0]!, population[1]!];
 };
-
+/**
+ * This selection method selects two individuals at random from the population.
+ */
 const randomSelection: selectionMethod<WithFitness> = async (population) => {
   if (population.length < 2) {
     throw new Error(
@@ -19,7 +26,13 @@ const randomSelection: selectionMethod<WithFitness> = async (population) => {
   const randomIndex2 = Math.floor(Math.random() * population.length);
   return [population[randomIndex1]!, population[randomIndex2]!];
 };
-
+/**
+ * This selection method selects two individuals from the population using tournament selection.
+ *
+ * The tournament selection method works by randomly selecting two individuals from the population and comparing their fitness. The individual with the higher fitness is selected as a parent for the next generation.
+ *
+ * This process is repeated until two parents are selected.
+ */
 const tournamentSelection: selectionMethod<WithFitness> = async (
   population
 ) => {
@@ -43,6 +56,15 @@ const tournamentSelection: selectionMethod<WithFitness> = async (
 
   return [winners[0]!, winners[1]!];
 };
+
+/**
+ * This selection method selects two individuals from the population using linear ranking selection.
+ *
+ * The linear ranking selection method works by assigning a rank to each individual in the population based on their fitness. The individual with the highest fitness is assigned a rank of 1, the second highest is assigned a rank of 2, and so on. The probability of an individual being selected as a parent for the next generation is proportional to their rank.
+ *
+ * This process is repeated until two parents are selected.
+ */
+
 const linearRankingSelection: selectionMethod<WithFitness> = async (
   population
 ) => {
@@ -82,7 +104,13 @@ const linearRankingSelection: selectionMethod<WithFitness> = async (
 
   return [selectedIndividuals[0]!, selectedIndividuals[1]!];
 };
-
+/**
+ * This selection method selects two individuals from the population using roulette wheel selection.
+ *
+ * The roulette wheel selection method works by assigning a probability of selection to each individual in the population based on their fitness. The individual with the highest fitness has the highest probability of being selected as a parent for the next generation.
+ *
+ * This process is repeated until two parents are selected.
+ */
 const rouletteWheelSelection: selectionMethod<WithFitness> = async (
   population
 ) => {
