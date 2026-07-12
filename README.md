@@ -47,20 +47,16 @@ const ga = new GeneticAlgorithm<Individual>({
   optimization: Optimize.Maximize,
   fitnessObjective: 100,
   logging: false,
-});
-
-ga.setFitnessFunction(async (individual) => individual.value * 10);
-
-ga.setSelectionMethod(randomSelection);
-
-ga.setCrossoverMethod(async (parent1, parent2) => ({
-  value: Math.round((parent1.value + parent2.value) / 2),
-}));
-
-ga.setMutationMethod(async (individual) => ({
-  ...individual,
-  value: individual.value + 1,
-}));
+})
+  .setFitnessFunction(async (individual) => individual.value * 10)
+  .setSelectionMethod(randomSelection)
+  .setCrossoverMethod(async (parent1, parent2) => ({
+    value: Math.round((parent1.value + parent2.value) / 2),
+  }))
+  .setMutationMethod(async (individual) => ({
+    ...individual,
+    value: individual.value + 1,
+  }));
 
 const fittest = await ga.evolve(20);
 console.log(fittest);
@@ -90,9 +86,28 @@ You then wire in the four async hooks:
 
 Finally, run evolution with:
 
-- `await evolve(generations)`
+- `await evolve(generations, callback?)`
 
 It returns the fittest individual from the final population.
+
+#### Callback Parameter
+
+You can optionally pass a callback function to `evolve()` that gets invoked after each generation:
+
+```ts
+await ga.evolve(20, (generation, population, fittest) => {
+  console.log(`Generation ${generation}: Best fitness = ${fittest.fitness}`);
+  // Your custom logic here
+});
+```
+
+The callback receives:
+
+- `generation`: current generation number
+- `population`: entire population array
+- `fittest`: the best individual in the current generation
+
+This is useful for tracking progress, updating UI, or implementing custom stopping conditions.
 
 ### `Optimize`
 
