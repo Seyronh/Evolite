@@ -51,17 +51,29 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     this.loggingInterval = loggingInterval;
     this.fitnessObjective = fitnessObjective;
   }
-  setFitnessFunction(fitnessFunction: fitnessFunction<Entity>): void {
+  setFitnessFunction(
+    fitnessFunction: fitnessFunction<Entity>
+  ): GeneticAlgorithm<Entity> {
     this.fitnessFunction = fitnessFunction;
+    return this;
   }
-  setSelectionMethod(selectionMethod: selectionMethod<Entity>): void {
+  setSelectionMethod(
+    selectionMethod: selectionMethod<Entity>
+  ): GeneticAlgorithm<Entity> {
     this.selectionMethod = selectionMethod;
+    return this;
   }
-  setMutationMethod(mutationMethod: mutationMethod<Entity>): void {
+  setMutationMethod(
+    mutationMethod: mutationMethod<Entity>
+  ): GeneticAlgorithm<Entity> {
     this.mutationMethod = mutationMethod;
+    return this;
   }
-  setCrossoverMethod(crossoverMethod: crossoverMethod<Entity>): void {
+  setCrossoverMethod(
+    crossoverMethod: crossoverMethod<Entity>
+  ): GeneticAlgorithm<Entity> {
     this.crossoverMethod = crossoverMethod;
+    return this;
   }
   private async step(): Promise<boolean> {
     if (!this.fitnessFunction) {

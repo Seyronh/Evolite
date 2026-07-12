@@ -160,22 +160,22 @@ describe("Genetic Algorithm", () => {
       logging: false,
       loggingInterval: 1,
       fitnessObjective: -100,
-    });
-    ga.setFitnessFunction(async (individual) => {
-      return individual.cost;
-    });
-    ga.setSelectionMethod(async (population) => {
-      return [population[0]!, population[1]!];
-    });
-    ga.setMutationMethod(async (individual) => {
-      individual.cost += 1;
-      return individual;
-    });
-    ga.setCrossoverMethod(async (parent1) => {
-      return {
-        cost: parent1.cost,
-      };
-    });
+    })
+      .setFitnessFunction(async (individual) => {
+        return individual.cost;
+      })
+      .setSelectionMethod(async (population) => {
+        return [population[0]!, population[1]!];
+      })
+      .setMutationMethod(async (individual) => {
+        individual.cost += 1;
+        return individual;
+      })
+      .setCrossoverMethod(async (parent1) => {
+        return {
+          cost: parent1.cost,
+        };
+      });
     // Act
     const fittest = await ga.evolve(2);
     // Assert
