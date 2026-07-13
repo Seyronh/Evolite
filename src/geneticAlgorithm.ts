@@ -76,16 +76,16 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     return this;
   }
   private async step(): Promise<boolean> {
-    if (!this.fitnessFunction)
+    if (!this.fitnessFunction || this.fitnessFunction === undefined)
       throw new Error("Fitness function has not been set.");
 
-    if (!this.crossoverMethod)
+    if (!this.crossoverMethod || this.crossoverMethod === undefined)
       throw new Error("Crossover method has not been set.");
 
-    if (!this.selectionMethod)
+    if (!this.selectionMethod || this.selectionMethod === undefined)
       throw new Error("Selection method has not been set.");
 
-    if (!this.mutationMethod)
+    if (!this.mutationMethod || this.mutationMethod === undefined)
       throw new Error("Mutation method has not been set.");
 
     /*
@@ -108,17 +108,19 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     /*
     3. Check if the fitness objective has been reached
     */
+    if (!this.population[0] || this.population[0].fitness === undefined)
+      throw new Error("Population is empty. Evolution cannot continue.");
     if (
       this.fitnessObjective &&
       ((this.optimization === Optimize.Maximize &&
-        this.population[0]!.fitness! >= this.fitnessObjective) ||
+        this.population[0].fitness >= this.fitnessObjective) ||
         (this.optimization === Optimize.Minimize &&
-          -this.population[0]!.fitness! <= this.fitnessObjective))
+          -this.population[0].fitness <= this.fitnessObjective))
     )
       return true;
     const newPopulation: Entity[] = [];
     if (this.fittestAlwaysSurvives) {
-      newPopulation.push(this.population[0]!);
+      newPopulation.push(this.population[0]);
     }
     const offSpringPromises: Promise<Entity>[] = [];
     const slotsToFill = this.maxPopulationSize - newPopulation.length;
@@ -155,8 +157,10 @@ class GeneticAlgorithm<Entity extends WithFitness> {
   ): Promise<Entity> {
     for (let i = 0; i < generations; i++) {
       const fitnessObjectiveReached = await this.step();
+      if (!this.population[0])
+        throw new Error("Population is empty. Evolution cannot continue.");
       if (callback) {
-        callback(this.generation, this.population, this.population[0]!);
+        callback(this.generation, this.population, this.population[0]);
       }
       if (fitnessObjectiveReached) {
         if (this.logging) {
@@ -164,14 +168,14 @@ class GeneticAlgorithm<Entity extends WithFitness> {
             `Fitness objective reached in generation ${this.generation}`
           );
           console.log(
-            `Generation ${this.generation} best fitness: ${this.population[0]!.fitness} average fitness: ${this.population.reduce((acc, individual) => acc + (individual.fitness ?? 0), 0) / this.population.length}`
+            `Generation ${this.generation} best fitness: ${this.population[0].fitness} average fitness: ${this.population.reduce((acc, individual) => acc + (individual.fitness ?? 0), 0) / this.population.length}`
           );
         }
         break;
       }
       if (this.logging && i % this.loggingInterval === 0) {
         console.log(
-          `Generation ${this.generation} best fitness: ${this.population[0]!.fitness} average fitness: ${this.population.reduce((acc, individual) => acc + (individual.fitness ?? 0), 0) / this.population.length}`
+          `Generation ${this.generation} best fitness: ${this.population[0].fitness} average fitness: ${this.population.reduce((acc, individual) => acc + (individual.fitness ?? 0), 0) / this.population.length}`
         );
       }
       this.generation++;

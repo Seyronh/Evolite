@@ -13,7 +13,9 @@ const fittestSelection = async <Entity extends WithFitness>(
       "Population must have at least 2 individuals for fittest selection."
     );
   }
-  return [population[0]!, population[1]!];
+  if (!population[0] || !population[1])
+    throw new Error("Fittest selection failed to select two individuals.");
+  return [population[0], population[1]];
 };
 /**
  * This selection method selects two individuals at random from the population.
@@ -28,7 +30,9 @@ const randomSelection = async <Entity extends WithFitness>(
   }
   const randomIndex1 = Math.floor(Math.random() * population.length);
   const randomIndex2 = Math.floor(Math.random() * population.length);
-  return [population[randomIndex1]!, population[randomIndex2]!];
+  if (!population[randomIndex1] || !population[randomIndex2])
+    throw new Error("Random selection failed to select two individuals.");
+  return [population[randomIndex1], population[randomIndex2]];
 };
 /**
  * This selection method selects two individuals from the population using tournament selection.
@@ -57,8 +61,10 @@ const tournamentSelection = async <Entity extends WithFitness>(
       individual1Fitness > individual2Fitness ? individual1 : individual2;
     winners.push(winner);
   }
+  if (!winners[0] || !winners[1])
+    throw new Error("Tournament selection failed to select two individuals.");
 
-  return [winners[0]!, winners[1]!];
+  return [winners[0], winners[1]];
 };
 
 /**
