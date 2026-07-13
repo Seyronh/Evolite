@@ -1,7 +1,9 @@
-import { expect, test, describe, beforeEach, afterEach } from "bun:test";
+import { expect, test, describe, beforeEach, afterEach, spyOn } from "bun:test";
+import type { Mock } from "bun:test";
 import { GeneticAlgorithm, Optimize } from "../src/index";
 type individual = { cost: number; fitness?: number };
 let population: Array<individual> = [];
+let logSpy: Mock<() => void>;
 beforeEach(() => {
   population = [
     { cost: 10, fitness: 10 },
@@ -9,10 +11,13 @@ beforeEach(() => {
     { cost: 30, fitness: 30 },
     { cost: 40, fitness: 40 },
   ];
+  logSpy = spyOn(console, "log").mockImplementation(() => {});
 });
 afterEach(() => {
   population = [];
+  logSpy.mockRestore();
 });
+
 describe("Genetic Algorithm", () => {
   test("should throw an error if the initial population has less than 2 individuals", async () => {
     // Arrange
@@ -76,7 +81,7 @@ describe("Genetic Algorithm", () => {
     const ga = new GeneticAlgorithm({
       initialPopulation: population,
       maxPopulationSize: 4,
-      mutationRate: 0.1,
+      mutationRate: 1,
       fittestAlwaysSurvives: true,
       optimization: Optimize.Maximize,
       logging: true,
@@ -99,9 +104,22 @@ describe("Genetic Algorithm", () => {
       };
     });
     // Act
-    const fittest = await ga.evolve(20);
+    const fittest = await ga.evolve(3);
     // Assert
-    expect(fittest.fitness).toBeGreaterThanOrEqual(100);
+    expect(fittest.fitness).toBe(140);
+    expect(logSpy).toHaveBeenCalledTimes(4);
+    expect(logSpy).toHaveBeenCalledWith(
+      "Generation 1 best fitness: 40 average fitness: 10"
+    );
+    expect(logSpy).toHaveBeenCalledWith(
+      "Generation 2 best fitness: 70 average fitness: 17.5"
+    );
+    expect(logSpy).toHaveBeenCalledWith(
+      "Generation 3 best fitness: 140 average fitness: 122.5"
+    );
+    expect(logSpy).toHaveBeenCalledWith(
+      "Fitness objective reached in generation 3"
+    );
   });
   test("should keep the lowest-cost individual as the fittest one when optimizing for Minimize", async () => {
     // Arrange
