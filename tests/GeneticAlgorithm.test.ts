@@ -1,5 +1,18 @@
-import { expect, test, describe } from "bun:test";
+import { expect, test, describe, beforeEach, afterEach } from "bun:test";
 import { GeneticAlgorithm, Optimize } from "../src/index";
+type individual = { cost: number; fitness?: number };
+let population: Array<individual> = [];
+beforeEach(() => {
+  population = [
+    { cost: 10, fitness: 10 },
+    { cost: 20, fitness: 20 },
+    { cost: 30, fitness: 30 },
+    { cost: 40, fitness: 40 },
+  ];
+});
+afterEach(() => {
+  population = [];
+});
 describe("Genetic Algorithm", () => {
   test("should throw an error if the initial population has less than 2 individuals", async () => {
     // Arrange
@@ -11,13 +24,12 @@ describe("Genetic Algorithm", () => {
   });
   test("should throw an error if the max population size is less than or equal to 1", async () => {
     // Arrange
-    const initialPopulation = [{ fitness: 10 }, { fitness: 20 }];
     const maxPopulationSize = 1;
     // Act & Assert
     expect(
       () =>
         new GeneticAlgorithm({
-          initialPopulation,
+          initialPopulation: population,
           maxPopulationSize,
         })
     ).toThrow("Max population size must be greater than 1.");
@@ -26,14 +38,8 @@ describe("Genetic Algorithm", () => {
     "should evolve the population for a given number of generations",
     async () => {
       // Arrange
-      const initialPopulation = [
-        { fitness: 10 },
-        { fitness: 20 },
-        { fitness: 30 },
-        { fitness: 40 },
-      ];
       const ga = new GeneticAlgorithm({
-        initialPopulation,
+        initialPopulation: population,
         maxPopulationSize: 4,
         mutationRate: 0.1,
         fittestAlwaysSurvives: true,
@@ -43,18 +49,18 @@ describe("Genetic Algorithm", () => {
         fitnessObjective: 100,
       });
       ga.setFitnessFunction(async (individual) => {
-        return individual.fitness ?? 0;
+        return individual.cost ?? 0;
       });
       ga.setSelectionMethod(async (population) => {
         return [population[0]!, population[1]!];
       });
       ga.setMutationMethod(async (individual) => {
-        individual.fitness = (individual.fitness ?? 0) * 2;
+        individual.cost = (individual.cost ?? 0) * 2;
         return individual;
       });
       ga.setCrossoverMethod(async (parent1, parent2) => {
         return {
-          fitness: ((parent1?.fitness ?? 0) + (parent2?.fitness ?? 0)) / 2,
+          cost: ((parent1?.cost ?? 0) + (parent2?.cost ?? 0)) / 2,
         };
       });
       // Act
@@ -66,14 +72,9 @@ describe("Genetic Algorithm", () => {
   );
   test("should log the progress of the evolution if logging is enabled", async () => {
     // Arrange
-    const initialPopulation = [
-      { fitness: 10 },
-      { fitness: 20 },
-      { fitness: 30 },
-      { fitness: 40 },
-    ];
+
     const ga = new GeneticAlgorithm({
-      initialPopulation,
+      initialPopulation: population,
       maxPopulationSize: 4,
       mutationRate: 0.1,
       fittestAlwaysSurvives: true,
@@ -83,18 +84,18 @@ describe("Genetic Algorithm", () => {
       fitnessObjective: 100,
     });
     ga.setFitnessFunction(async (individual) => {
-      return individual.fitness ?? 0;
+      return individual.cost ?? 0;
     });
     ga.setSelectionMethod(async (population) => {
       return [population[0]!, population[1]!];
     });
     ga.setMutationMethod(async (individual) => {
-      individual.fitness = (individual.fitness ?? 0) * 2;
+      individual.cost = (individual.cost ?? 0) * 2;
       return individual;
     });
     ga.setCrossoverMethod(async (parent1, parent2) => {
       return {
-        fitness: ((parent1?.fitness ?? 0) + (parent2?.fitness ?? 0)) / 2,
+        cost: ((parent1?.cost ?? 0) + (parent2?.cost ?? 0)) / 2,
       };
     });
     // Act
@@ -104,15 +105,8 @@ describe("Genetic Algorithm", () => {
   });
   test("should keep the lowest-cost individual as the fittest one when optimizing for Minimize", async () => {
     // Arrange
-    type Candidate = { cost: number; fitness?: number };
-    const initialPopulation: Candidate[] = [
-      { cost: 10 },
-      { cost: 20 },
-      { cost: 30 },
-      { cost: 40 },
-    ];
     const ga = new GeneticAlgorithm({
-      initialPopulation,
+      initialPopulation: population,
       maxPopulationSize: 4,
       mutationRate: 0,
       fittestAlwaysSurvives: true,
@@ -144,15 +138,8 @@ describe("Genetic Algorithm", () => {
   });
   test("should not stop early when the minimize objective has not been reached", async () => {
     // Arrange
-    type Candidate = { cost: number; fitness?: number };
-    const initialPopulation: Candidate[] = [
-      { cost: 10 },
-      { cost: 20 },
-      { cost: 30 },
-      { cost: 40 },
-    ];
     const ga = new GeneticAlgorithm({
-      initialPopulation,
+      initialPopulation: population,
       maxPopulationSize: 4,
       mutationRate: 0,
       fittestAlwaysSurvives: true,
@@ -184,31 +171,25 @@ describe("Genetic Algorithm", () => {
   });
   test("should call the callback function after each generation", async () => {
     // Arrange
-    const initialPopulation = [
-      { fitness: 10 },
-      { fitness: 20 },
-      { fitness: 30 },
-      { fitness: 40 },
-    ];
     let callbackCount = 0;
     const ga = new GeneticAlgorithm({
-      initialPopulation,
+      initialPopulation: population,
       maxPopulationSize: 4,
       mutationRate: 0.1,
       fittestAlwaysSurvives: true,
       optimization: Optimize.Maximize,
       logging: false,
     });
-    ga.setFitnessFunction(async (individual) => individual.fitness ?? 0);
+    ga.setFitnessFunction(async (individual) => individual.cost ?? 0);
     ga.setSelectionMethod(async (population) => [
       population[0]!,
       population[1]!,
     ]);
     ga.setMutationMethod(async (individual) => ({
-      fitness: (individual.fitness ?? 0) + 1,
+      cost: (individual.cost ?? 0) + 1,
     }));
     ga.setCrossoverMethod(async (parent1, parent2) => ({
-      fitness: ((parent1?.fitness ?? 0) + (parent2?.fitness ?? 0)) / 2,
+      cost: ((parent1?.cost ?? 0) + (parent2?.cost ?? 0)) / 2,
     }));
     // Act
     await ga.evolve(5, (generation, population, fittest) => {
@@ -223,22 +204,16 @@ describe("Genetic Algorithm", () => {
   });
   test("should pass the correct generation number to the callback", async () => {
     // Arrange
-    const initialPopulation = [
-      { fitness: 10 },
-      { fitness: 20 },
-      { fitness: 30 },
-      { fitness: 40 },
-    ];
     const generationNumbers: number[] = [];
     const ga = new GeneticAlgorithm({
-      initialPopulation,
+      initialPopulation: population,
       maxPopulationSize: 4,
       mutationRate: 0,
       fittestAlwaysSurvives: true,
       optimization: Optimize.Maximize,
       logging: false,
     });
-    ga.setFitnessFunction(async (individual) => individual.fitness ?? 0);
+    ga.setFitnessFunction(async (individual) => individual.cost ?? 0);
     ga.setSelectionMethod(async (population) => [
       population[0]!,
       population[1]!,
@@ -254,22 +229,16 @@ describe("Genetic Algorithm", () => {
   });
   test("should pass the fittest individual to the callback", async () => {
     // Arrange
-    const initialPopulation = [
-      { fitness: 10 },
-      { fitness: 20 },
-      { fitness: 30 },
-      { fitness: 40 },
-    ];
     const fittestValues: number[] = [];
     const ga = new GeneticAlgorithm({
-      initialPopulation,
+      initialPopulation: population,
       maxPopulationSize: 4,
       mutationRate: 0,
       fittestAlwaysSurvives: true,
       optimization: Optimize.Maximize,
       logging: false,
     });
-    ga.setFitnessFunction(async (individual) => individual.fitness ?? 0);
+    ga.setFitnessFunction(async (individual) => individual.cost ?? 0);
     ga.setSelectionMethod(async (population) => [
       population[0]!,
       population[1]!,
@@ -286,30 +255,24 @@ describe("Genetic Algorithm", () => {
   });
   test("should not call the callback if none is provided", async () => {
     // Arrange
-    const initialPopulation = [
-      { fitness: 10 },
-      { fitness: 20 },
-      { fitness: 30 },
-      { fitness: 40 },
-    ];
     const ga = new GeneticAlgorithm({
-      initialPopulation,
+      initialPopulation: population,
       maxPopulationSize: 4,
       mutationRate: 0.1,
       fittestAlwaysSurvives: true,
       optimization: Optimize.Maximize,
       logging: false,
     });
-    ga.setFitnessFunction(async (individual) => individual.fitness ?? 0);
+    ga.setFitnessFunction(async (individual) => individual.cost ?? 0);
     ga.setSelectionMethod(async (population) => [
       population[0]!,
       population[1]!,
     ]);
     ga.setMutationMethod(async (individual) => ({
-      fitness: (individual.fitness ?? 0) + 1,
+      cost: (individual.cost ?? 0) + 1,
     }));
     ga.setCrossoverMethod(async (parent1, parent2) => ({
-      fitness: ((parent1?.fitness ?? 0) + (parent2?.fitness ?? 0)) / 2,
+      cost: ((parent1?.cost ?? 0) + (parent2?.cost ?? 0)) / 2,
     }));
     // Act & Assert (should not throw error)
     const fittest = await ga.evolve(3);
@@ -317,11 +280,8 @@ describe("Genetic Algorithm", () => {
   });
   test("should not stop early in Minimize mode when current cost is higher than a positive fitnessObjective", async () => {
     // Arrange
-    type Candidate = { cost: number; fitness?: number };
-    const initialPopulation: Candidate[] = [{ cost: 10 }, { cost: 20 }];
-
     const ga = new GeneticAlgorithm({
-      initialPopulation,
+      initialPopulation: population,
       maxPopulationSize: 2,
       mutationRate: 0,
       fittestAlwaysSurvives: true,
