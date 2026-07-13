@@ -113,7 +113,7 @@ class GeneticAlgorithm<Entity extends WithFitness> {
       ((this.optimization === Optimize.Maximize &&
         this.population[0]!.fitness! >= this.fitnessObjective) ||
         (this.optimization === Optimize.Minimize &&
-          this.population[0]!.fitness! <= this.fitnessObjective))
+          -this.population[0]!.fitness! <= this.fitnessObjective))
     )
       return true;
     const newPopulation: Entity[] = [];
