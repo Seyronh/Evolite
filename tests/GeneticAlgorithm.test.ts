@@ -277,7 +277,7 @@ describe("Genetic Algorithm", () => {
     ga.setMutationMethod(async (individual) => individual);
     ga.setCrossoverMethod(async (parent1) => parent1);
     // Act
-    await ga.evolve(2, (generation, population, fittest) => {
+    await ga.evolve(2, (_generation, _population, fittest) => {
       fittestValues.push(fittest.fitness ?? 0);
     });
     // Assert
