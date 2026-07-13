@@ -96,10 +96,9 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     );
     const fitnessValues = await Promise.all(fitnessPromises);
     this.population.forEach((individual, index) => {
+      const value = fitnessValues.at(index)!;
       individual.fitness =
-        this.optimization === Optimize.Maximize
-          ? fitnessValues[index]!
-          : -fitnessValues[index]!;
+        this.optimization === Optimize.Maximize ? value : -value;
     });
     /*
     2. Sort the population based on fitness

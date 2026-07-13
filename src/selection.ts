@@ -30,9 +30,9 @@ const randomSelection = async <Entity extends WithFitness>(
   }
   const randomIndex1 = Math.floor(Math.random() * population.length);
   const randomIndex2 = Math.floor(Math.random() * population.length);
-  if (!population[randomIndex1] || !population[randomIndex2])
+  if (!population.at(randomIndex1) || !population.at(randomIndex2))
     throw new Error("Random selection failed to select two individuals.");
-  return [population[randomIndex1], population[randomIndex2]];
+  return [population.at(randomIndex1)!, population.at(randomIndex2)!];
 };
 /**
  * This selection method selects two individuals from the population using tournament selection.
@@ -53,8 +53,8 @@ const tournamentSelection = async <Entity extends WithFitness>(
   for (let i = 0; i < 2; i++) {
     const randomIndex1 = Math.floor(Math.random() * population.length);
     const randomIndex2 = Math.floor(Math.random() * population.length);
-    const individual1 = population[randomIndex1]!;
-    const individual2 = population[randomIndex2]!;
+    const individual1 = population.at(randomIndex1)!;
+    const individual2 = population.at(randomIndex2)!;
     const individual1Fitness = individual1.fitness ?? 0;
     const individual2Fitness = individual2.fitness ?? 0;
     const winner =
@@ -103,9 +103,9 @@ const linearRankingSelection = async <Entity extends WithFitness>(
     let cumulativeRankSum = 0;
 
     for (let j = 0; j < sortedPopulation.length; j++) {
-      cumulativeRankSum += ranks[j]!;
+      cumulativeRankSum += ranks.at(j)!;
       if (cumulativeRankSum >= randomValue) {
-        selectedIndividuals.push(sortedPopulation[j]!);
+        selectedIndividuals.push(sortedPopulation.at(j)!);
         break;
       }
     }
