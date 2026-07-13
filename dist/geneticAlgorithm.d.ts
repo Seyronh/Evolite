@@ -1,4 +1,4 @@
-import type { WithFitness, geneticAlgorithmOptions, fitnessFunction, selectionMethod, mutationMethod, crossoverMethod } from "./types.ts";
+import type { WithFitness, geneticAlgorithmOptions, fitnessFunction, selectionMethod, mutationMethod, crossoverMethod } from "./types";
 declare class GeneticAlgorithm<Entity extends WithFitness> {
     generation: number;
     population: Entity[];
