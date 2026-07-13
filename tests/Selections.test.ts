@@ -5,7 +5,7 @@ import {
   tournamentSelection,
   linearRankingSelection,
   rouletteWheelSelection,
-} from "../src/index.ts";
+} from "../src/index";
 
 describe("Selection Methods", () => {
   describe("Fittest Selection", () => {

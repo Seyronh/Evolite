@@ -1,4 +1,4 @@
-import type { WithFitness } from "./types.ts";
+import type { WithFitness } from "./types";
 
 /**
  * This selection method selects the two fittest individuals from the population.

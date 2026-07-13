@@ -5,8 +5,8 @@ import type {
   selectionMethod,
   mutationMethod,
   crossoverMethod,
-} from "./types.ts";
-import { Optimize } from "./types.ts";
+} from "./types";
+import { Optimize } from "./types";
 
 class GeneticAlgorithm<Entity extends WithFitness> {
   public generation: number = 1;

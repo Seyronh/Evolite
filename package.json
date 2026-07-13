@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "build": "bun build ./src/index.ts --outdir ./dist --production --sourcemap --packages external && bun run build:declaration",
-    "build:declaration": "tsc --project tsconfig.json",
+    "build:declaration": "tsc --project tsconfig.build.json",
     "test": "bun test --concurrent --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix && prettier --write .",

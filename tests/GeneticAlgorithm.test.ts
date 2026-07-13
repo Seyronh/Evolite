@@ -1,5 +1,5 @@
 import { expect, test, describe } from "bun:test";
-import { GeneticAlgorithm, Optimize } from "../src/index.ts";
+import { GeneticAlgorithm, Optimize } from "../src/index";
 describe("Genetic Algorithm", () => {
   test("should throw an error if the initial population has less than 2 individuals", async () => {
     // Arrange
