@@ -76,18 +76,18 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     return this;
   }
   private async step(): Promise<boolean> {
-    if (!this.fitnessFunction) {
+    if (!this.fitnessFunction)
       throw new Error("Fitness function has not been set.");
-    }
-    if (!this.crossoverMethod) {
+
+    if (!this.crossoverMethod)
       throw new Error("Crossover method has not been set.");
-    }
-    if (!this.selectionMethod) {
+
+    if (!this.selectionMethod)
       throw new Error("Selection method has not been set.");
-    }
-    if (!this.mutationMethod) {
+
+    if (!this.mutationMethod)
       throw new Error("Mutation method has not been set.");
-    }
+
     /*
     1. Evaluate fitness of the population
     */
@@ -120,18 +120,23 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     if (this.fittestAlwaysSurvives) {
       newPopulation.push(this.population[0]!);
     }
-    while (newPopulation.length < this.maxPopulationSize) {
-      const parents = await this.selectionMethod(this.population);
-      if (parents.length < 2) {
-        throw new Error("Selection method must return at least two parents.");
-      }
-      const [parent1, parent2] = parents;
-      let offspring: Entity = await this.crossoverMethod(parent1!, parent2!);
-      if (Math.random() < this.mutationRate) {
-        offspring = await this.mutationMethod(offspring);
-      }
-      newPopulation.push(offspring);
+    const offSpringPromises: Promise<Entity>[] = [];
+    const slotsToFill = this.maxPopulationSize - newPopulation.length;
+    for (let i = 0; i < slotsToFill; i++) {
+      offSpringPromises.push(
+        (async () => {
+          const [parent1, parent2] = await this.selectionMethod!(
+            this.population
+          );
+          let child = await this.crossoverMethod!(parent1, parent2);
+          if (Math.random() > this.mutationRate) {
+            child = await this.mutationMethod!(child);
+          }
+          return child;
+        })()
+      );
     }
+    newPopulation.push(...(await Promise.all(offSpringPromises)));
     this.population = newPopulation;
     return false;
   }
