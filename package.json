@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "build": "bun build ./src/index.ts --outdir ./dist --production --sourcemap --packages external && bun run build:declaration",
-    "build:declaration": "tsc --project tsconfig.json",
+    "build:declaration": "tsc --project tsconfig.build.json",
     "test": "bun test --concurrent --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix && prettier --write .",
@@ -42,7 +42,9 @@
     "@eslint/js": "^10.0.1",
     "@eslint/markdown": "^8.0.3",
     "@types/bun": "latest",
+    "@types/eslint-plugin-security": "^3.0.1",
     "eslint": "^10.7.0",
+    "eslint-plugin-security": "^4.0.1",
     "globals": "^17.7.0",
     "husky": "^9.1.7",
     "jiti": "^2.7.0",

@@ -1,5 +1,5 @@
 import { expect, test, describe } from "bun:test";
-import { GeneticAlgorithm, Optimize } from "../src/index.ts";
+import { GeneticAlgorithm, Optimize } from "../src/index";
 describe("Genetic Algorithm", () => {
   test("should throw an error if the initial population has less than 2 individuals", async () => {
     // Arrange
@@ -58,7 +58,7 @@ describe("Genetic Algorithm", () => {
         };
       });
       // Act
-      const fittest = await ga.evolve(20);
+      const fittest = await ga.evolve(100);
       // Assert
       expect(fittest.fitness).toBeGreaterThanOrEqual(100);
     },
@@ -314,5 +314,34 @@ describe("Genetic Algorithm", () => {
     // Act & Assert (should not throw error)
     const fittest = await ga.evolve(3);
     expect(fittest.fitness).toBeGreaterThan(0);
+  });
+  test("should not stop early in Minimize mode when current cost is higher than a positive fitnessObjective", async () => {
+    // Arrange
+    type Candidate = { cost: number; fitness?: number };
+    const initialPopulation: Candidate[] = [{ cost: 10 }, { cost: 20 }];
+
+    const ga = new GeneticAlgorithm({
+      initialPopulation,
+      maxPopulationSize: 2,
+      mutationRate: 0,
+      fittestAlwaysSurvives: true,
+      optimization: Optimize.Minimize,
+      fitnessObjective: 5,
+      logging: false,
+    });
+
+    ga.setFitnessFunction(async (individual) => individual.cost);
+    ga.setSelectionMethod(async (population) => [
+      population[0]!,
+      population[1]!,
+    ]);
+    ga.setMutationMethod(async (individual) => individual);
+    ga.setCrossoverMethod(async (parent1) => ({ cost: parent1.cost }));
+
+    // Act
+    await ga.evolve(3);
+
+    // Assert
+    expect(ga.generation).toBe(4);
   });
 });
