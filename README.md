@@ -76,6 +76,10 @@ Create a new optimizer with:
 - `fitnessObjective`: optional target fitness to stop early
 - `logging`: print generation progress, default `false`
 - `loggingInterval`: how often to log generations, default `1`
+- `yieldEvery`: number of generations before yielding control back to the event loop, default `0`
+
+> **Note**
+> `yieldEvery` is disabled by default (`0`) for maximum performance. In a browser environment, it should be set to `1` or higher to prevent the algorithm from blocking the main thread, allowing the UI to re-render and update smoothly across generations.
 
 You then wire in the four async hooks:
 

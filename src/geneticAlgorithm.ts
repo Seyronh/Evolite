@@ -17,6 +17,7 @@ class GeneticAlgorithm<Entity extends WithFitness> {
   private logging: boolean;
   private loggingInterval: number;
   private fitnessObjective: number;
+  private yieldEvery: number = 0;
   private optimization: Optimize;
 
   private fitnessFunction?: fitnessFunction<Entity>;
@@ -33,6 +34,7 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     logging = false,
     loggingInterval = 1,
     fitnessObjective = 0,
+    yieldEvery = 0,
   }: geneticAlgorithmOptions<Entity>) {
     if (initialPopulation.length <= 1) {
       throw new Error(
@@ -50,6 +52,7 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     this.logging = logging;
     this.loggingInterval = loggingInterval;
     this.fitnessObjective = fitnessObjective;
+    this.yieldEvery = yieldEvery;
   }
   setFitnessFunction(
     fitnessFunction: fitnessFunction<Entity>
@@ -152,14 +155,17 @@ class GeneticAlgorithm<Entity extends WithFitness> {
       generation: number,
       population: Entity[],
       fittest: Entity
-    ) => void
+    ) => void | Promise<void>
   ): Promise<Entity> {
     for (let i = 0; i < generations; i++) {
       const fitnessObjectiveReached = await this.step();
       if (!this.population[0])
         throw new Error("Population is empty. Evolution cannot continue.");
       if (callback) {
-        callback(this.generation, this.population, this.population[0]);
+        await callback(this.generation, this.population, this.population[0]);
+      }
+      if (this.yieldEvery > 0 && i % this.yieldEvery === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
       }
       if (fitnessObjectiveReached) {
         if (this.logging) {
