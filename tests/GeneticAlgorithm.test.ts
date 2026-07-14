@@ -322,4 +322,88 @@ describe("Genetic Algorithm", () => {
     // Assert
     expect(ga.generation).toBe(4);
   });
+  test("should default yieldEvery to 0 and execute normally", async () => {
+    // Arrange
+    const ga = new GeneticAlgorithm({
+      initialPopulation: population,
+      maxPopulationSize: 4,
+      mutationRate: 0,
+      fittestAlwaysSurvives: true,
+      optimization: Optimize.Maximize,
+    });
+
+    ga.setFitnessFunction(async (individual) => individual.cost ?? 0);
+    ga.setSelectionMethod(async (population) => [
+      population[0]!,
+      population[1]!,
+    ]);
+    ga.setMutationMethod(async (individual) => individual);
+    ga.setCrossoverMethod(async (parent1) => ({ cost: parent1.cost }));
+
+    // Act
+    const fittest = await ga.evolve(5);
+
+    // Assert
+    expect(fittest.fitness).toBe(40);
+    expect(ga.generation).toBe(6);
+  });
+
+  test("should block macrotasks when yieldEvery is 0", async () => {
+    // Arrange
+    const ga = new GeneticAlgorithm({
+      initialPopulation: population,
+      maxPopulationSize: 4,
+      yieldEvery: 0,
+    });
+
+    ga.setFitnessFunction(async (individual) => individual.cost ?? 0);
+    ga.setSelectionMethod(async (population) => [
+      population[0]!,
+      population[1]!,
+    ]);
+    ga.setMutationMethod(async (individual) => individual);
+    ga.setCrossoverMethod(async (parent1) => ({ cost: parent1.cost }));
+
+    let macroTaskExecuted = false;
+    setTimeout(() => {
+      macroTaskExecuted = true;
+    }, 0);
+
+    // Act
+    await ga.evolve(10);
+
+    // Assert
+    expect(macroTaskExecuted).toBe(false);
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(macroTaskExecuted).toBe(true);
+  });
+
+  test("should yield control to macrotasks during evolution when yieldEvery is >= 1", async () => {
+    // Arrange
+    const ga = new GeneticAlgorithm({
+      initialPopulation: population,
+      maxPopulationSize: 4,
+      yieldEvery: 1,
+    });
+
+    ga.setFitnessFunction(async (individual) => individual.cost ?? 0);
+    ga.setSelectionMethod(async (population) => [
+      population[0]!,
+      population[1]!,
+    ]);
+    ga.setMutationMethod(async (individual) => individual);
+    ga.setCrossoverMethod(async (parent1) => ({ cost: parent1.cost }));
+
+    let macroTaskExecuted = false;
+    setTimeout(() => {
+      macroTaskExecuted = true;
+    }, 0);
+
+    // Act
+    await ga.evolve(5);
+
+    // Assert
+    expect(macroTaskExecuted).toBe(true);
+  });
 });
