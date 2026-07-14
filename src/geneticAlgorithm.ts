@@ -130,7 +130,7 @@ class GeneticAlgorithm<Entity extends WithFitness> {
             this.population
           );
           let child = await this.crossoverMethod!(parent1, parent2);
-          if (Math.random() > this.mutationRate) {
+          if (Math.random() < this.mutationRate) {
             child = await this.mutationMethod!(child);
           }
           return child;
