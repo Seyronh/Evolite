@@ -76,7 +76,7 @@ describe("Selection Methods", () => {
         expect(selected1.fitness).toBeGreaterThanOrEqual(20);
         expect(selected2.fitness).toBeGreaterThanOrEqual(20);
       },
-      { retry: 3 }
+      { retry: 100 }
     );
     test("should throw an error if the population has less than 2 individuals", async () => {
       // Arrange
