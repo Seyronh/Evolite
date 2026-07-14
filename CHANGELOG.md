@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/Seyronh/Evolite/compare/v1.1.1...v1.2.0) (2026-07-14)
+
+
+### Bug Fixes
+
+* :bug: mutationRate if statement was inverted ([96529c7](https://github.com/Seyronh/Evolite/commit/96529c74781e1ed608f114c60a455317944def55))
+
+
+### Features
+
+* :sparkles: add yieldEvery property ([a58838f](https://github.com/Seyronh/Evolite/commit/a58838f655599f95712c60bbfaf481aa0873db0a))
+
 ## [1.1.1](https://github.com/Seyronh/Evolite/compare/v1.1.0...v1.1.1) (2026-07-13)
 
 
