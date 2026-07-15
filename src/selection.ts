@@ -1,9 +1,13 @@
 import type { WithFitness } from "./types";
-
 /**
- * This selection method selects the two fittest individuals from the population.
- *
- * Warning: This function expects that the population is already sorted by fitness
+ * Selects the two fittest individuals from the population.
+ * * @remarks
+ * **Warning:** This function expects the population array to be pre-sorted by fitness in descending order.
+ * It is highly efficient but offers no genetic diversity (selection pressure is extremely high).
+ * * @template Entity - The type of object representing an individual. Must extend {@link WithFitness}.
+ * @param population - The current population of individuals. Must be pre-sorted.
+ * @returns A promise that resolves to a tuple containing the two fittest individuals.
+ * @throws {Error} If the population has fewer than 2 individuals.
  */
 const fittestSelection = async <Entity extends WithFitness>(
   population: Entity[]
@@ -18,7 +22,14 @@ const fittestSelection = async <Entity extends WithFitness>(
   return [population[0], population[1]];
 };
 /**
- * This selection method selects two individuals at random from the population.
+ * Selects two individuals completely at random from the population.
+ * * @remarks
+ * This method ignores fitness values entirely, which maximizes genetic diversity but
+ * completely eliminates selection pressure (equivalent to a random search).
+ * * @template Entity - The type of object representing an individual. Must extend {@link WithFitness}.
+ * @param population - The current population of individuals.
+ * @returns A promise that resolves to a tuple containing two randomly chosen individuals.
+ * @throws {Error} If the population has fewer than 2 individuals.
  */
 const randomSelection = async <Entity extends WithFitness>(
   population: Entity[]
@@ -35,11 +46,16 @@ const randomSelection = async <Entity extends WithFitness>(
   return [population.at(randomIndex1)!, population.at(randomIndex2)!];
 };
 /**
- * This selection method selects two individuals from the population using tournament selection.
- *
- * The tournament selection method works by randomly selecting two individuals from the population and comparing their fitness. The individual with the higher fitness is selected as a parent for the next generation.
- *
- * This process is repeated until two parents are selected.
+ * Selects two individuals from the population using tournament selection.
+ * * @remarks
+ * For each parent selection, two individuals are randomly picked from the population,
+ * and their fitness values are compared. The individual with the higher fitness wins the
+ * tournament and is selected. This process is repeated twice to select both parents.
+ * This method balances genetic diversity and selection pressure.
+ * * @template Entity - The type of object representing an individual. Must extend {@link WithFitness}.
+ * @param population - The current population of individuals.
+ * @returns A promise that resolves to a tuple containing the two tournament winners.
+ * @throws {Error} If the population has fewer than 2 individuals.
  */
 const tournamentSelection = async <Entity extends WithFitness>(
   population: Entity[]
@@ -68,11 +84,16 @@ const tournamentSelection = async <Entity extends WithFitness>(
 };
 
 /**
- * This selection method selects two individuals from the population using linear ranking selection.
- *
- * The linear ranking selection method works by assigning a rank to each individual in the population based on their fitness. The individual with the highest fitness is assigned a rank of 1, the second highest is assigned a rank of 2, and so on. The probability of an individual being selected as a parent for the next generation is proportional to their rank.
- *
- * This process is repeated until two parents are selected.
+ * Selects two individuals from the population using linear ranking selection.
+ * * @remarks
+ * Linear ranking selection assigns a rank to each individual based on fitness (the fittest
+ * is assigned a rank of 1, the second fittest 2, and so on). The probability of an individual
+ * being selected is proportional to its rank rather than its absolute fitness.
+ * This helps prevent "super-individuals" from prematurely dominating the population.
+ * * @template Entity - The type of object representing an individual. Must extend {@link WithFitness}.
+ * @param population - The current population of individuals.
+ * @returns A promise that resolves to a tuple containing the two selected individuals.
+ * @throws {Error} If the population has fewer than 2 individuals.
  */
 const linearRankingSelection = async <Entity extends WithFitness>(
   population: Entity[]
@@ -114,11 +135,16 @@ const linearRankingSelection = async <Entity extends WithFitness>(
   return [selectedIndividuals[0]!, selectedIndividuals[1]!];
 };
 /**
- * This selection method selects two individuals from the population using roulette wheel selection.
- *
- * The roulette wheel selection method works by assigning a probability of selection to each individual in the population based on their fitness. The individual with the highest fitness has the highest probability of being selected as a parent for the next generation.
- *
- * This process is repeated until two parents are selected.
+ * Selects two individuals from the population using roulette wheel selection.
+ * * @remarks
+ * Also known as fitness proportionate selection. Each individual's probability of being selected
+ * is directly proportional to its absolute fitness value. Highly fit individuals represent
+ * larger slices of the wheel, while weaker individuals represent smaller slices but still retain
+ * a non-zero probability of being chosen.
+ * * @template Entity - The type of object representing an individual. Must extend {@link WithFitness}.
+ * @param population - The current population of individuals.
+ * @returns A promise that resolves to a tuple containing the two selected individuals.
+ * @throws {Error} If the population has fewer than 2 individuals.
  */
 const rouletteWheelSelection = async <Entity extends WithFitness>(
   population: Entity[]
