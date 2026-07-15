@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Seyronh/Evolite/compare/v1.2.1...v1.3.0) (2026-07-15)
+
+
+### Features
+
+* :sparkles: early stop method and reset method ([94f14ad](https://github.com/Seyronh/Evolite/commit/94f14adfa44f3fcbadf5ebe1cf3f5c89a90df51d))
+
 ## [1.2.1](https://github.com/Seyronh/Evolite/compare/v1.2.0...v1.2.1) (2026-07-15)
 
 

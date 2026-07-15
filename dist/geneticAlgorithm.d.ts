@@ -2,6 +2,7 @@ import type { WithFitness, geneticAlgorithmOptions, fitnessFunction, selectionMe
 declare class GeneticAlgorithm<Entity extends WithFitness> {
     generation: number;
     population: Entity[];
+    private initialPopulation;
     private maxPopulationSize;
     private mutationRate;
     private fittestAlwaysSurvives;
@@ -9,6 +10,7 @@ declare class GeneticAlgorithm<Entity extends WithFitness> {
     private loggingInterval;
     private fitnessObjective;
     private yieldEvery;
+    private shouldStop;
     private optimization;
     private fitnessFunction?;
     private selectionMethod?;
@@ -19,6 +21,8 @@ declare class GeneticAlgorithm<Entity extends WithFitness> {
     setSelectionMethod(selectionMethod: selectionMethod<Entity>): GeneticAlgorithm<Entity>;
     setMutationMethod(mutationMethod: mutationMethod<Entity>): GeneticAlgorithm<Entity>;
     setCrossoverMethod(crossoverMethod: crossoverMethod<Entity>): GeneticAlgorithm<Entity>;
+    stop(): void;
+    reset(): void;
     private step;
     /**
      * Evolves the population for a given number of generations.
