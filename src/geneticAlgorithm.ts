@@ -16,7 +16,7 @@ class GeneticAlgorithm<Entity extends WithFitness> {
   private fittestAlwaysSurvives: boolean;
   private logging: boolean;
   private loggingInterval: number;
-  private fitnessObjective: number;
+  private fitnessObjective: number | undefined;
   private yieldEvery: number = 0;
   private optimization: Optimize;
 
@@ -33,7 +33,7 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     optimization = Optimize.Maximize,
     logging = false,
     loggingInterval = 1,
-    fitnessObjective = 0,
+    fitnessObjective,
     yieldEvery = 0,
   }: geneticAlgorithmOptions<Entity>) {
     if (initialPopulation.length <= 1) {
