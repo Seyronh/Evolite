@@ -16,7 +16,7 @@ class GeneticAlgorithm<Entity extends WithFitness> {
   private fittestAlwaysSurvives: boolean;
   private logging: boolean;
   private loggingInterval: number;
-  private fitnessObjective: number;
+  private fitnessObjective: number | undefined;
   private yieldEvery: number = 0;
   private optimization: Optimize;
 
@@ -33,7 +33,7 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     optimization = Optimize.Maximize,
     logging = false,
     loggingInterval = 1,
-    fitnessObjective = 0,
+    fitnessObjective,
     yieldEvery = 0,
   }: geneticAlgorithmOptions<Entity>) {
     if (initialPopulation.length <= 1) {
@@ -113,7 +113,7 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     if (!this.population[0] || this.population[0].fitness === undefined)
       throw new Error("Population is empty. Evolution cannot continue.");
     if (
-      this.fitnessObjective &&
+      this.fitnessObjective !== undefined &&
       ((this.optimization === Optimize.Maximize &&
         this.population[0].fitness >= this.fitnessObjective) ||
         (this.optimization === Optimize.Minimize &&
