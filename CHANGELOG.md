@@ -1,3 +1,11 @@
+## [1.2.1](https://github.com/Seyronh/Evolite/compare/v1.2.0...v1.2.1) (2026-07-15)
+
+
+### Bug Fixes
+
+* :bug: fitnessObjective was initialized to 0 when it has to be undefined ([c2f1bd2](https://github.com/Seyronh/Evolite/commit/c2f1bd280395acb1b6682f9ed790d505699e17c3))
+* :bug: if fitnessObjective is 0 it doesnt stop ([04d574c](https://github.com/Seyronh/Evolite/commit/04d574cda4c5502b9103118a203473b940deaf97))
+
 # [1.2.0](https://github.com/Seyronh/Evolite/compare/v1.1.1...v1.2.0) (2026-07-14)
 
 
