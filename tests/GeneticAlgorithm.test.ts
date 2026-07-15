@@ -406,4 +406,28 @@ describe("Genetic Algorithm", () => {
     // Assert
     expect(macroTaskExecuted).toBe(true);
   });
+  test("should stop early when reset is called during evolution", async () => {
+    // Arrange
+    const ga = new GeneticAlgorithm({
+      initialPopulation: population,
+      maxPopulationSize: 4,
+      yieldEvery: 1,
+    });
+
+    ga.setFitnessFunction(async (individual) => individual.cost ?? 0);
+    ga.setSelectionMethod(async (population) => [
+      population[0]!,
+      population[1]!,
+    ]);
+    ga.setMutationMethod(async (individual) => individual);
+    ga.setCrossoverMethod(async (parent1) => ({ cost: parent1.cost }));
+
+    // Act
+    const evolvePromise = ga.evolve(10000);
+    ga.reset();
+
+    // Assert
+    await expect(evolvePromise).resolves.toBeDefined();
+    expect(ga.generation).toBe(1);
+  });
 });
