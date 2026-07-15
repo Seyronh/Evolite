@@ -14,6 +14,7 @@ interface geneticAlgorithmOptions<Entity extends WithFitness> {
     optimization?: Optimize;
     logging?: boolean;
     loggingInterval?: number;
+    yieldEvery?: number;
 }
 type fitnessFunction<Entity> = (individual: Entity) => Promise<number>;
 type selectionMethod<Entity extends WithFitness> = (population: Entity[]) => Promise<[Entity, Entity]>;

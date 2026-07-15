@@ -11,6 +11,7 @@ import { Optimize } from "./types";
 class GeneticAlgorithm<Entity extends WithFitness> {
   public generation: number = 1;
   public population: Entity[];
+  private initialPopulation: Entity[];
   private maxPopulationSize: number;
   private mutationRate: number;
   private fittestAlwaysSurvives: boolean;
@@ -18,6 +19,7 @@ class GeneticAlgorithm<Entity extends WithFitness> {
   private loggingInterval: number;
   private fitnessObjective: number | undefined;
   private yieldEvery: number = 0;
+  private shouldStop: boolean = false;
   private optimization: Optimize;
 
   private fitnessFunction?: fitnessFunction<Entity>;
@@ -44,7 +46,8 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     if (maxPopulationSize <= 1) {
       throw new Error("Max population size must be greater than 1.");
     }
-    this.population = initialPopulation;
+    this.initialPopulation = initialPopulation;
+    this.population = [...initialPopulation];
     this.maxPopulationSize = maxPopulationSize;
     this.mutationRate = mutationRate;
     this.fittestAlwaysSurvives = fittestAlwaysSurvives;
@@ -77,6 +80,14 @@ class GeneticAlgorithm<Entity extends WithFitness> {
   ): GeneticAlgorithm<Entity> {
     this.crossoverMethod = crossoverMethod;
     return this;
+  }
+  stop() {
+    this.shouldStop = true;
+  }
+  reset() {
+    this.stop();
+    this.generation = 1;
+    this.population = [...this.initialPopulation];
   }
   private async step(): Promise<boolean> {
     if (!this.fitnessFunction || this.fitnessFunction === undefined)
@@ -158,7 +169,15 @@ class GeneticAlgorithm<Entity extends WithFitness> {
     ) => void | Promise<void>
   ): Promise<Entity> {
     for (let i = 0; i < generations; i++) {
+      if (this.shouldStop) {
+        if (this.logging) console.log("Evolution stopped manually.");
+        break;
+      }
       const fitnessObjectiveReached = await this.step();
+      if (this.shouldStop) {
+        if (this.logging) console.log("Evolution stopped manually.");
+        break;
+      }
       if (!this.population[0])
         throw new Error("Population is empty. Evolution cannot continue.");
       if (callback) {
